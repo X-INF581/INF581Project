@@ -45,7 +45,8 @@ class Simple():
         self.reward_same_city = reward_same_city
         self.reward_holding = reward_holding
         self.warehouses = (self.capacity//self.number_of_articles)*np.ones((self.number_of_cities,self.number_of_articles))
-        self.action_space = range(0, number_of_articles**number_of_cities)
+        # adding the "Put-No-Article" action to the action space
+        self.action_space = range(0, (number_of_articles+1)**number_of_cities)
         self.observation_space = ObservationSpace(low=0., high=capacity, shape=(number_of_cities, number_of_articles))
         
 
@@ -54,8 +55,12 @@ class Simple():
             raise ValueError("{} is not in the action space {}".format(n, self.action_space))
         res = np.zeros((self.number_of_cities,self.number_of_articles))
         for i in range(self.number_of_cities):
-            res[i][n % self.number_of_articles] = 1
-            n = n // self.number_of_articles
+            idx = n % (self.number_of_articles + 1)
+            # adding the article_i in the warehouse of the city 
+            # the else part means Put nothing (No action) 
+            if idx < self.number_of_articles:
+                res[i][idx] = 1
+            n = n // (self.number_of_articles + 1)
         return res
     
 
@@ -103,7 +108,7 @@ def main():
     print(simple.observation_space)
     simple.reset()
     print(simple.warehouses)
-    print(simple.step(3))
+    print(simple.step(32))
     
 if __name__=="__main__":
     main() 

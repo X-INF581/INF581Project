@@ -11,7 +11,7 @@ import keras as keras
 def create_model(number_of_cities=3,number_of_articles=3):
     model = keras.Sequential()
     model.add(keras.layers.Flatten(input_shape=(number_of_articles*number_of_cities,)))
-    model.add(keras.layers.Dense(number_of_articles**number_of_cities))
+    model.add(keras.layers.Dense((number_of_articles+1)**number_of_cities))
     model.compile('adam',loss='mse')
     return model
 
@@ -91,7 +91,7 @@ def main():
             # 2. Explore using the Epsilon Greedy Exploration Strategy
             if random_number <= epsilon:
                 # Explore
-                action = np.random.randint(0,number_of_articles**number_of_cities)
+                action = np.random.randint(simple.action_space.start, simple.action_space.stop)
             else:
                 # Exploit best known action
                 # model dims are (batch, env.observation_space.n)
