@@ -63,6 +63,14 @@ class Simple():
             n = n // (self.number_of_articles + 1)
         return res
     
+    
+    def id_from_actions(self, actions):
+        a = 0
+        for i in range(0, len(actions)):
+            a += actions[i] * (self.number_of_articles + 1)**i
+        assert (a in self.action_space)
+        return a
+    
 
     def reset(self):
         self.warehouses = (self.capacity//self.number_of_articles)*np.ones((self.number_of_cities,self.number_of_articles))
@@ -109,6 +117,12 @@ def main():
     simple.reset()
     print(simple.warehouses)
     print(simple.step(32))
+    ########################################
+    print()
+    actions = [1, 0, 3]
+    a = simple.id_from_actions(actions)
+    print(a)
+    print(simple.action_from_id(a))
     
 if __name__=="__main__":
     main() 
