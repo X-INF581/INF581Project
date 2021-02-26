@@ -64,6 +64,22 @@ class A2C:
 		return probs[0]
 
 
+def generate_trajectory(agent, env, t_max=100):
+	s = env.reset()
+	total_rewards = 0
+	s = s.flatten()
+	for _ in range(t_max):
+		proba_dist = agent.get_action_probs(s)
+		action = np.random.choice(env.action_space, p=proba_dist)
+		next_s, r = env.step(action)
+		next_s  = next_s.flatten()
+		r /= 4
+		total_rewards += r
+		agent.train(s, next_s, r, action)
+		s = next_s
+	return total_rewards
+		
+
 def main():
 	nbr_articles = 3
 	nbr_cities = 3
@@ -75,21 +91,13 @@ def main():
 		n_action=n_action
 	)
 	means_rewards = []
-	t_max = 1000
-	for epoch in range(0, 200):
-		s = env.reset()
-		total_rewards = 0
-		s = s.flatten()
-		for _ in range(t_max):
-			proba_dist = agent.get_action_probs(s)
-			action = np.random.choice(env.action_space, p=proba_dist)
-			next_s, r = env.step(action)
-			next_s  = next_s.flatten()
-			r /= 4
-			total_rewards += r
-			agent.train(s, next_s, r, action)
-			s = next_s
-		mean_r = total_rewards / t_max
+	epochs = 50
+	steps = 20
+	for epoch in range(0, epochs):
+		sum_r = 0
+		for _ in range(0, steps):
+			sum_r += generate_trajectory(agent, env)
+		mean_r = sum_r / steps 
 		means_rewards.append(mean_r)
 		print("Epoch: {} | mean reward: {}".format(epoch, mean_r))
 	plt.plot(means_rewards)
