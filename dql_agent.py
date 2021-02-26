@@ -1,3 +1,5 @@
+#!/Library/Frameworks/Python.framework/Versions/3.7/bin/python3
+
 import environment
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' 
@@ -11,14 +13,13 @@ import keras as keras
 def create_model(number_of_cities=3,number_of_articles=3):
     model = keras.Sequential()
     model.add(keras.layers.Flatten(input_shape=(number_of_articles*number_of_cities,)))
-    model.add(keras.layers.Dense(number_of_articles**number_of_cities))
+    model.add(keras.layers.Dense((number_of_articles+1)**number_of_cities))
     model.compile('adam',loss='mse')
     return model
 
 
-number_of_cities,number_of_articles = 1,5
-simple = environment.Simple(capacity=15,number_of_cities=number_of_cities,number_of_articles=number_of_articles,reward_overflow=-2,reward_same_city=4)
-simple.warehouses += 2
+number_of_cities,number_of_articles = 2,3
+simple = environment.Simple(capacity=10,number_of_cities=number_of_cities,number_of_articles=number_of_articles,reward_overflow=-2,reward_same_city=4)
 
 def get_qs(model, state, step):
     return model.predict(state.reshape([1, state.shape[0]]))[0]
@@ -81,17 +82,18 @@ def main():
 
     steps_to_update_target_model = 0
     states = []
-    for episode in range(700):
+    for episode in range(7):
         total_training_rewards = 0
         observation = simple.reset()
         done = False
+        actions = {}
         while not done:
             steps_to_update_target_model += 1
             random_number = np.random.rand()
             # 2. Explore using the Epsilon Greedy Exploration Strategy
             if random_number <= epsilon:
                 # Explore
-                action = np.random.randint(0,number_of_articles**number_of_cities)
+                action = np.random.randint(0,(number_of_articles+1)**number_of_cities)
             else:
                 # Exploit best known action
                 # model dims are (batch, env.observation_space.n)
@@ -101,6 +103,7 @@ def main():
                 action = np.argmax(predicted)
 
             states.append(observation)
+            actions[action] = actions.get(action,0)+1
             new_observation, reward = simple.step(action)
             reward /= 4
             replay_memory.append([observation, action, reward, new_observation, done])
@@ -116,22 +119,26 @@ def main():
                 print('Total training rewards: {} after n steps = {} with final reward = {}'.format(total_training_rewards, episode, reward))
                 rewards.append(total_training_rewards)
                 total_training_rewards += 1
-                
+                print("Warehouses : ")
+                print(observation/simple.number_of_articles*simple.capacity)
+                length = sum(actions.values())
+                for key in range((number_of_articles+1)**number_of_cities):
+                    print(simple.action_from_id(key),round(actions.get(key,0)/length,2))
                 #case_tests = np.array([[0,1,1],[1,0,1],[1,1,0]])
                 #print(model.predict(case_tests))
                 if steps_to_update_target_model >= 20:
                     #print('Copying main network weights to the target network weights')
                     target_model.set_weights(model.get_weights())
                     steps_to_update_target_model = 0
-                    print(observation)
                     break
 
         epsilon = min_epsilon + (max_epsilon - min_epsilon) * np.exp(-decay * episode)
-    plt.plot(np.convolve(rewards,np.ones(10)/10,mode='valid'))
-    plt.show()
+    #plt.plot(np.convolve(rewards,np.ones(10)/10,mode='valid'))
+    #plt.show()
     states = np.array(states)
     print(simple.probabilities)
-    for i in range(number_of_articles):
-        plt.plot(states[:,0,i])
-        plt.show()
+    
+    #for i in range(number_of_articles):
+    #    plt.plot(states[:,0,i])
+    #    plt.show()
 main()
