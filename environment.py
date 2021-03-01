@@ -48,6 +48,11 @@ class Simple():
         # adding the "Put-No-Article" action to the action space
         self.action_space = range(0, (number_of_articles+1)**number_of_cities)
         self.observation_space = ObservationSpace(low=0., high=capacity, shape=(number_of_cities, number_of_articles))
+        # Track the current performance based on the deliveries
+        self.total_orders = 0
+        self.good_delivery = 0
+        self.meduim_delivery = 0
+        self.missing_delivery = 0
         
 
     def action_from_id(self, n):
@@ -73,6 +78,10 @@ class Simple():
     
 
     def reset(self):
+        self.total_orders = 0
+        self.good_delivery = 0
+        self.meduim_delivery = 0
+        self.missing_delivery = 0
         self.warehouses = (self.capacity//self.number_of_articles)*np.ones((self.number_of_cities,self.number_of_articles))
         return self.number_of_articles*self.warehouses/self.capacity
     
@@ -86,11 +95,13 @@ class Simple():
         orders = []
         deliveries = np.zeros((self.number_of_cities,self.number_of_articles))
         for i in range(self.number_of_cities):
+            self.total_orders  += 1
             order = np.random.choice(np.arange(0,self.number_of_articles),p=self.probabilities[i])
             orders.append(order)
             found = False
             if self.warehouses[i][order]>0:
                 reward+= self.reward_same_city
+                self.good_delivery += 1
                 deliveries[i,order] += 1
                 self.warehouses[i,order] -= 1 
                 found = True
@@ -98,11 +109,13 @@ class Simple():
                 for j in range(self.number_of_cities):
                     if j != i and self.warehouses[j][order]>0:
                         reward+= self.reward_other_city
+                        self.meduim_delivery += 1
                         deliveries[j,order] += 1
                         self.warehouses[j,order] -= 1 
                         break
             if not found:
                 reward += self.reward_not_found
+                self.missing_delivery += 1
 
         orders = np.eye(self.number_of_articles)[orders]
         reward += self.reward_holding*np.sum(self.warehouses)

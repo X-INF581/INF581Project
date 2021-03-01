@@ -95,11 +95,18 @@ def main():
 	steps = 20
 	for epoch in range(0, epochs):
 		sum_r = 0
-		for _ in range(0, steps):
+		for s in range(0, steps):
 			sum_r += generate_trajectory(agent, env)
+			good_rate = (env.good_delivery / env.total_orders) * 100
+			meduim_rate = (env.meduim_delivery / env.total_orders) * 100
+			missing_rate = (env.missing_delivery / env.total_orders) * 100
+			print("Episode {}: Total-orders={}, good-deliveries={:.2f} %, meduim-deliveries={:.2f} %, missing-deliveries={:.2f} %"\
+				.format(s, env.total_orders, good_rate, meduim_rate, missing_rate)
+				)
 		mean_r = sum_r / steps 
 		means_rewards.append(mean_r)
 		print("Epoch: {} | mean reward: {}".format(epoch, mean_r))
+		print()
 	plt.plot(means_rewards)
 	plt.xlabel("Epochs")
 	plt.ylabel("mean rewards")
