@@ -98,10 +98,10 @@ def main():
 		for s in range(0, steps):
 			sum_r += generate_trajectory(agent, env)
 			good_rate = (env.good_delivery / env.total_orders) * 100
-			meduim_rate = (env.meduim_delivery / env.total_orders) * 100
+			medium_rate = (env.medium_delivery / env.total_orders) * 100
 			missing_rate = (env.missing_delivery / env.total_orders) * 100
-			print("Episode {}: Total-orders={}, good-deliveries={:.2f} %, meduim-deliveries={:.2f} %, missing-deliveries={:.2f} %"\
-				.format(s, env.total_orders, good_rate, meduim_rate, missing_rate)
+			print("Episode {}: Total-orders={}, good-deliveries={:.2f} %, medium-deliveries={:.2f} %, missing-deliveries={:.2f} %"\
+				.format(s, env.total_orders, good_rate, medium_rate, missing_rate)
 				)
 		mean_r = sum_r / steps 
 		means_rewards.append(mean_r)

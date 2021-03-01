@@ -51,7 +51,7 @@ class Simple():
         # Track the current performance based on the deliveries
         self.total_orders = 0
         self.good_delivery = 0
-        self.meduim_delivery = 0
+        self.medium_delivery = 0
         self.missing_delivery = 0
         
 
@@ -80,7 +80,7 @@ class Simple():
     def reset(self):
         self.total_orders = 0
         self.good_delivery = 0
-        self.meduim_delivery = 0
+        self.medium_delivery = 0
         self.missing_delivery = 0
         self.warehouses = (self.capacity//self.number_of_articles)*np.ones((self.number_of_cities,self.number_of_articles))
         return self.number_of_articles*self.warehouses/self.capacity
@@ -109,7 +109,7 @@ class Simple():
                 for j in range(self.number_of_cities):
                     if j != i and self.warehouses[j][order]>0:
                         reward+= self.reward_other_city
-                        self.meduim_delivery += 1
+                        self.medium_delivery += 1
                         deliveries[j,order] += 1
                         self.warehouses[j,order] -= 1 
                         break
