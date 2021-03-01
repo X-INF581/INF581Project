@@ -115,7 +115,7 @@ def main():
             observation = new_observation
             total_training_rewards += reward
 
-            if steps_to_update_target_model>25:
+            if steps_to_update_target_model>100:
                 print('Total training rewards: {} after n steps = {} with final reward = {}'.format(total_training_rewards, episode, reward))
                 rewards.append(total_training_rewards)
                 total_training_rewards += 1
