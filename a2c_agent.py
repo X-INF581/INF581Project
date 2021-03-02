@@ -100,6 +100,7 @@ def main():
 			good_rate = (env.good_delivery / env.total_orders) * 100
 			medium_rate = (env.medium_delivery / env.total_orders) * 100
 			missing_rate = (env.missing_delivery / env.total_orders) * 100
+			assert (env.good_delivery + env.missing_delivery + env.medium_delivery == env.total_orders)
 			print("Episode {}: Total-orders={}, good-deliveries={:.2f} %, medium-deliveries={:.2f} %, missing-deliveries={:.2f} %"\
 				.format(s, env.total_orders, good_rate, medium_rate, missing_rate)
 				)
