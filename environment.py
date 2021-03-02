@@ -98,23 +98,28 @@ class Simple():
             self.total_orders  += 1
             order = np.random.choice(np.arange(0,self.number_of_articles),p=self.probabilities[i])
             orders.append(order)
-            found = False
+            found_same_city = False
+            found_other_city = False
             if self.warehouses[i][order]>0:
                 reward+= self.reward_same_city
                 self.good_delivery += 1
                 deliveries[i,order] += 1
                 self.warehouses[i,order] -= 1 
-                found = True
+                found_same_city = True
             else:
                 for j in range(self.number_of_cities):
                     if j != i and self.warehouses[j][order]>0:
                         reward+= self.reward_other_city
                         self.medium_delivery += 1
                         deliveries[j,order] += 1
-                        self.warehouses[j,order] -= 1 
+                        self.warehouses[j,order] -= 1
+                        found_other_city = True 
                         break
-            if not found:
+            if not found_same_city:
+                # giving a negative reward for the 2 cases (other_city and missing delivery)
                 reward += self.reward_not_found
+
+            if (not found_same_city and not found_other_city):
                 self.missing_delivery += 1
 
         orders = np.eye(self.number_of_articles)[orders]
