@@ -27,6 +27,8 @@ s = env.reset()
 a = 32
 print(env.action_from_id(a))
 next_s, r = env.step(a)
+print(next_s)
+print("Reward: ", r)
 ```
 ```shell
 # Output
