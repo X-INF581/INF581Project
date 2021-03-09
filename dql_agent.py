@@ -13,6 +13,7 @@ import keras as keras
 def create_model(number_of_cities=3,number_of_articles=3):
     model = keras.Sequential()
     model.add(keras.layers.Flatten(input_shape=(number_of_articles*number_of_cities,)))
+    model.add(keras.layers.Dense(int(((number_of_articles+1)**number_of_cities) * 1.3)))
     model.add(keras.layers.Dense((number_of_articles+1)**number_of_cities))
     model.compile('adam',loss='mse')
     return model
@@ -78,7 +79,7 @@ def main():
     X = []
     y = []
 
-    epochs = 10
+    epochs = 50
     episodes = 2
     steps = 100
     means_rewards = []
