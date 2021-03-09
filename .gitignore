@@ -2,3 +2,4 @@
 remove.py
 /Assets
 *.png
+/myenv

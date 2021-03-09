@@ -18,8 +18,8 @@ def create_model(number_of_cities=3,number_of_articles=3):
     return model
 
 
-number_of_cities,number_of_articles = 2,3
-env = environment.Simple(capacity=10,number_of_cities=number_of_cities,number_of_articles=number_of_articles,reward_overflow=-2,reward_same_city=4)
+number_of_cities,number_of_articles = 3,3
+env = environment.Simple(capacity=10,number_of_cities=number_of_cities,number_of_articles=number_of_articles)#,reward_overflow=-2,reward_same_city=4)
 
 def get_qs(model, state, step):
     return model.predict(state.reshape([1, state.shape[0]]))[0]
